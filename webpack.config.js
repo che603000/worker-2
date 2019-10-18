@@ -14,7 +14,8 @@ module.exports = {
     devtool: 'source-map',
 
     entry: {
-        index: './src/index',
+        index: './src/popup/index.js',
+        background: './src/background.js'
     },
     output: {
         publicPath: '/',
@@ -75,15 +76,16 @@ module.exports = {
             title: 'Полетные планы 5.9',
             chunks: ['index'],
             filename: 'index.html',
-            template: 'src/index.html',
+            template: 'src/popup/index.html',
             minify: false
         }),
-        // new CopyWebpackPlugin([
+        new CopyWebpackPlugin([
         //     {from: './images', to: './images'},
         //     {from: './css/bootstrap*'},
-        //     {from: './css/report.css', to: "./css"},
+             {from: 'src/end.js', to: "./js"},
+             {from: 'src/manifest.json', to: "./"},
         //     {from: './wmm', to: `./wmm`}
-        // ]),
+        ]),
     ],
     watch: true,
 
