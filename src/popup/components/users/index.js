@@ -1,44 +1,36 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import Search from './search';
-import Items from './items';
-import {sendMessage} from '../../../utils';
-import {SEARCH, WATCH} from '../../../const';
+import Items from '../items';
+import {searchUsers, watchUser} from '../../actions/users';
 
 
-export default class Index extends Component {
-    constructor() {
-        super(...arguments);
-        this.state = {
-            totalCount: 0,
-            workers: [],
-            loading: false
-        }
-    }
-
-    onWatch = id => {
-        console.log(id);
-        sendMessage({type: WATCH, data: id})
-            .then(id => {
-            })
+class Users extends Component {
+    onWatch = data => {
+        this.props.watchUser(data);
     };
 
     onSearch = value => {
-        this.setState({loading: true});
-        sendMessage({type: SEARCH, data: value})
-            .then(data => {
-                console.log(data);
-                this.setState({...data, error: null});
-            })
-            .catch(error => this.setState({error}))
-            .finally(() => this.setState({loading: false}));
+        this.props.searchUsers(value);
     };
 
     render() {
+        const {loading = false, workers: [], total = 0, error = null, value = ""} = this.props.users;
         return (
             <div className={'panel'}>
-                <Search onSearch={this.onSearch}/>
-                <Items {...this.state} onWatch={this.onWatch}/>
+                <Search value={value} onSearch={this.onSearch}/>
+                <Items {...this.props.users} watch={this.props.watch} onWatch={this.onWatch}/>
             </div>
         )
     }
 }
+
+
+
+export default connect(state => {
+    const {users, watch} = state;
+    return {
+        users,
+        watch
+    };
+}, {searchUsers, watchUser})(Users);

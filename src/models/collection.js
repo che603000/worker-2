@@ -7,10 +7,20 @@ export class Collection {
         return Array.from(this.store).map(s => s[1]);
     }
 
-    add(items, nameKey = 'id') {
-        const key = item[nameKey];
-        if(!key)
+    toObject() {
+        return Array.from(this.store).reduce((res, s) => {
+            res[s[0]] = s[1];
+            return res;
+        }, {});
+    }
 
-        [].concat(items).forEach(item => this.store.set(key, item));
+    set(items, nameKey = 'id') {
+        [].concat(items).forEach(item => {
+            const key = item[nameKey];
+            if (this.store.has(key))
+                this.store.delete(key);
+            else
+                this.store.set(key, item);
+        });
     }
 }

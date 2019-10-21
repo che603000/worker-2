@@ -1,4 +1,4 @@
-import {SEARCH, URL_SEARCH} from './const';
+import {SEARCH_REQUEST, URL_SEARCH,  WATCH_REQUEST, WATCH_REFRESH} from './const';
 import {Collection} from './models/collection';
 import {load} from './utils';
 
@@ -123,32 +123,47 @@ appOptions.changeOptions = (change, props) => {
 }
 */
 
-// const commands = (options) => {
-//     const {type, data} = options;
-//     switch (type) {
-//         case SEARCH: {
-//             const {value} = data;
-//             //state.value = value;
-//             //workers.load(value);
-//             break;
-//         }
-//
-//         default: {
-//
-//         }
-//     }
-// };
+const commands = (options, sendResponse) => {
+    const {type, data} = options;
+    switch (type) {
+        case SEARCH_REQUEST: {
+            load(`${URL_SEARCH}/${data.value}`)
+                .then(data => {
+                    sendResponse(data);
+                })
+            return true;
+        }
+        case WATCH_REQUEST: {
+            Promise.resolve()
+                .then(() => {
+                    collection.set(data);
+                })
+                .then(() => {
+                    const obj = collection.toObject();
+                    sendResponse(obj);
+                });
+
+            return true;
+        }
+        case WATCH_REFRESH: {
+            Promise.resolve()
+                .then(() => {
+                    const obj = collection.toObject();
+                    sendResponse(obj);
+                });
+
+            return true;
+        }
+
+        default: {
+            console.error("type not found");
+            return undefined;
+        }
+    }
+};
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
-    const {type, data} = req;
-    load(`${URL_SEARCH}/${data}`)
-        .then(data => {
-            collection.add(data.workers);
-            console.log(collection.toArray());
-            sendResponse(data);
-        });
-    return true;
-    //commands(req);
+    return commands(req, sendResponse);
 });
 
 
