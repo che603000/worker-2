@@ -35,7 +35,7 @@
       "32": "images/phone_32.png",
       "64": "images/phone_64.png"
     },
-    "default_title": "Справочник тел. АПИ",
+    "default_title": "Справочник тел. АПИ [ver 3.0]",
     "default_popup": "popup.html"
   },
   "permissions": [

@@ -1,4 +1,4 @@
-import {SEARCH_REQUEST, SEARCH_SUCCESS, SEARCH_ERROR} from '../../const';
+import {WORKER_REQUEST, WORKER_SUCCESS, WORKER_ERROR} from '../../const';
 
 const defState = {
     loading: false,
@@ -10,16 +10,15 @@ const defState = {
 export default (state = defState, action) => {
     const {type, data} = action;
     switch (type) {
-        case SEARCH_REQUEST: {
+        case WORKER_REQUEST: {
             return {...state, loading: true, error: null};
         }
-        case SEARCH_SUCCESS: {
-            const {workers, totalCount} = data;
-            return {...state, loading: false, error: null, workers, total: totalCount};
+        case WORKER_SUCCESS: {
+            return {loading: false, error: null, workers: data};
         }
-        case SEARCH_ERROR: {
+        case WORKER_ERROR: {
             const {error} = data;
-            return {...state, loading: false, error, workers: [], total: 0};
+            return {loading: false, error, workers: []};
         }
         default: {
             return state;

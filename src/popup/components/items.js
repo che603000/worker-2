@@ -47,9 +47,7 @@ const Item = props => {
                         </Badge>
                     </h5>
 
-                    <div style={styleMemo}>{departmentName}. {postName}</div>
-                    <div style={styleMemo}>{cabinet ? ("Офис: " + cabinet) : ""}</div>
-
+                    <div style={styleMemo}>{departmentName}. {postName}. {cabinet ? ("Офис: " + cabinet) : ""}</div>
                 </Col>
             </Row>
         </ListGroup.Item>

@@ -1,7 +1,7 @@
 import {
-    SEARCH_REQUEST,
-    SEARCH_SUCCESS,
-    SEARCH_ERROR,
+    WORKER_REQUEST,
+    WORKER_SUCCESS,
+    WORKER_ERROR,
     WATCH_REQUEST,
     WATCH_SUCCESS,
     WATCH_ERROR,
@@ -10,12 +10,12 @@ import {
 import {sendMessage} from '../../utils';
 
 export const searchUsers = (value, isLoading = true) => dispatch => {
-    const action = {type: SEARCH_REQUEST, data: {value}};
+    const action = {type: WORKER_REQUEST, data: {value}};
 
     isLoading && dispatch(action);
     sendMessage(action)
-        .then(data => dispatch({type: SEARCH_SUCCESS, data}))
-        .catch(error => dispatch({type: SEARCH_ERROR, data: {error}}));
+        //.then(data => dispatch({type: SEARCH_SUCCESS, data}))
+        .catch(error => dispatch({type: WORKER_ERROR, data: {error}}));
 };
 
 export const watchUser = (data) => dispatch => {

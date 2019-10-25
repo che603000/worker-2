@@ -1,17 +1,17 @@
-import {SEARCH_REQUEST, URL_SEARCH, WATCH_REQUEST, WATCH_REFRESH} from './const';
+import {WORKER_REQUEST, URL_WORKER_SEARCH, WATCH_REQUEST, POPUP_OPEN} from './const';
 import {Collection, Birthday} from './models/collection';
-import {load, loadState} from './utils';
-import {STORE_WATCHERS, STORE_OPTIONS} from './const'
+import {load, loadState, saveState} from './utils';
+import {STORE_OPTIONS, STORE_WORKERS} from './const';
 
 let keyInterval;
 let options = loadState(STORE_OPTIONS, {status: "3", alerts: "1"});
-const collection = new Collection();
+const watchers = new Collection();
 
 const auth = () => {
     const authUrl = "https://portal/auth/logon";
     const userUrl = "https://portal/api/getUser";
     return load(userUrl)
-        .catch(res => load(authUrl));
+        .catch(() => load(authUrl));
 };
 
 const notification = (worker, options) => {
@@ -21,7 +21,6 @@ const notification = (worker, options) => {
     switch (alert) {
         case "0":
             return; // не выводить оповещение
-            break;
         case "1":
             optionsNotification = {eventTime: Date.now() + 1000 * 30}; //  выводить оповещение на 30 сек
             break;
@@ -32,7 +31,7 @@ const notification = (worker, options) => {
             optionsNotification = {};
     }
     chrome.notifications.create(
-        worker.id.toString(),
+        `${worker.id} -${Date.now()}`,
         {
             type: "basic",
             iconUrl: `https://portal/api/xrm/img/WorkerPhoto/${id}`,
@@ -47,11 +46,11 @@ const startInterval = options => {
     const time = 1000 * 60 * (+options.status); //
     keyInterval && clearInterval(keyInterval);
     if (time > 0)
-        keyInterval = setInterval(() => collection.refresh(), time);
+        keyInterval = setInterval(() => watchers.refresh(), time);
 };
 
-collection.load();
-collection.onChangeStatus = worker => notification(worker, options);
+watchers.load();
+watchers.onChangeStatus = worker => notification(worker, options);
 startInterval(options);
 
 
@@ -61,20 +60,28 @@ birthday.load();
 const commands = (action, sendResponse) => {
     const {type, data} = action;
     switch (type) {
-        case SEARCH_REQUEST: {
-            load(`${URL_SEARCH}/${data.value}`)
-                .then(data => sendResponse(data));
-            return true;
+        case POPUP_OPEN: {
+            watchers.refresh();
+            birthday.refresh();
+            load(`${URL_WORKER_SEARCH}/${data.value}`)
+                .then(data => saveState(STORE_WORKERS, data.workers));
+            return sendResponse({});
+        }
+        case WORKER_REQUEST: {
+            load(`${URL_WORKER_SEARCH}/${data.value}`)
+                .then(data => {
+                    saveState(STORE_WORKERS, data.workers);
+                });
+            return sendResponse({});
         }
         case WATCH_REQUEST: {
             Promise.resolve()
                 .then(() => {
-                    collection.set(data);
-                    collection.save();
-                    const watchers = collection.toArray();
-                    sendResponse(watchers);
+                    watchers.set(data);
+                    watchers.save();
                 });
-            return true;
+            return sendResponse({});
+            ;
         }
         default: {
             console.error("type not found");
@@ -103,14 +110,10 @@ window.addEventListener('storage', (e) => {
 
 auth()
     .then(() => {
-        // watchers.load();
-        // birthdays.load();
-        collection.refresh();
-        birthday.refresh();
-        //console.log('background start => ok');
+        console.log('background start => ok');
     })
     .catch(err => {
-        console.log('background start => error')
+        console.log('background start => error');
         console.log(err);
     });
 

@@ -42,7 +42,7 @@ export class Collection {
     refresh() {
         const ids = Object.keys(this.store).map(key => 'id=' + key).join('&');
         const url = `${URL_WORKER_IDS}?${ids}`;
-        return load(url)
+        load(url)
             .then(res => {
                 const {workers} = res;
                 let isChange = false;
@@ -65,7 +65,7 @@ export class Birthday extends Collection {
     nameStore = STORE_BIRTHDAY;
 
     refresh() {
-        return load(URL_WORKER_BIRTHDAY, {method: "POST"})
+        load(URL_WORKER_BIRTHDAY, {method: "POST"})
             .then(workers => {
                 this.store = {};
                 this.set(workers);
