@@ -6,12 +6,17 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserJSPlugin = require('terser-webpack-plugin');
 
-const publicPath = path.resolve(__dirname, './public');
+const publicPath = path.resolve(__dirname, './prod');
 
 module.exports = {
-    mode: 'development',
-    devtool: 'source-map',
+    mode: 'production',
+    devtool: 'none',
+    optimization: {
+        minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+    },
 
     entry: {
         popup: './src/popup/index.js',
@@ -77,13 +82,27 @@ module.exports = {
             chunks: ['popup'],
             filename: 'popup.html',
             template: 'src/popup/index.html',
-            minify: false
+            minify: {
+                removeAttributeQuotes: false,
+                collapseWhitespace: true,
+                html5: true,
+                removeComments: true,
+                removeEmptyAttributes: true,
+                minifyCSS: true,
+            },
         }),
         new HtmlWebpackPlugin({
             chunks: ['options'],
             filename: 'options.html',
             template: 'src/options/index.html',
-            minify: false
+            minify: {
+                removeAttributeQuotes: false,
+                collapseWhitespace: true,
+                html5: true,
+                removeComments: true,
+                removeEmptyAttributes: true,
+                minifyCSS: true,
+            },
         }),
         new CopyWebpackPlugin([
              {from: 'src/images', to: './images'},
@@ -91,7 +110,6 @@ module.exports = {
              {from: 'src/manifest.json', to: "./"},
         ]),
     ],
-    watch: true,
 };
 
 

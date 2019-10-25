@@ -4,13 +4,14 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import {Tabs, Tab} from "react-bootstrap";
-import {FaUser, FaSearch, FaBirthdayCake} from 'react-icons/fa';
+import {FaUser, FaStar, FaBirthdayCake} from 'react-icons/fa';
 
 import Users from './components/users';
 import Watchers from './components/watchers';
+import BirthDay from './components/birthday';
 
 import {selectTab} from './actions/tabs';
-import {watchRefresh, searchUsers} from './actions/users';
+import {searchUsers} from './actions/users';
 
 
 class App extends React.Component {
@@ -24,14 +25,14 @@ class App extends React.Component {
         return (
             <div className={'container panel'}>
                 <Tabs id="main-tabs" onSelect={this.onTab} activeKey={tabs}>
-                    <Tab eventKey="users" title={<FaUser title="users..." size="1em"/>}>
+                    <Tab eventKey="users" title={<FaUser title="искать сотрудника..." size="1em"/>}>
                         <Users/>
                     </Tab>
-                    <Tab eventKey="watcher" title={<FaSearch/>}>
+                    <Tab eventKey="watcher" title={<FaStar title="избранные сотрудники"/>}>
                         <Watchers/>
                     </Tab>
-                    <Tab eventKey="birthday" title={<FaBirthdayCake/>}>
-                        33333333333
+                    <Tab eventKey="birthday" title={<FaBirthdayCake title="дни рождения"/>}>
+                        <BirthDay/>
                     </Tab>
                 </Tabs>
             </div>
@@ -39,16 +40,15 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        this.props.watchRefresh();
-        this.props.searchUsers(this.props.value, false);
+        this.props.searchUsers(this.props.search, false);
     }
 
 }
 
 export default connect(state => {
-    const {tabs, users} = state;
+    const {tabs, users, search} = state;
     return {
         tabs,
-        value: users.value
+        search
     };
-}, {selectTab, watchRefresh, searchUsers})(App);
+}, {selectTab, searchUsers})(App);

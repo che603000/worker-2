@@ -32,13 +32,15 @@ const Item = props => {
                     <img className="img-rounded img-xs" src={`https://portal/api/xrm/img/WorkerPhoto/${id}`}
                          style={styleImg} alt="нет фото"/>
                     <Button variant="link" size="sm" onClick={() => onWatch(data)}>
-                        <IconWatch title="вкл/выкл контроль статуса"
+                        <IconWatch title={isWatch ? "удалить из избранных" : "добавить в избранные"}
                                    size={18}
                                    style={{color: '#999'}}/>
                     </Button>
                 </Col>
                 <Col xs={10}>
+
                     <span style={styleFullName}>{family} {name} {secondName}</span>
+                    {/*<a href="tg://resolve?domain=@izheleznov" target="_blank">Telegram</a>*/}
                     <h5 style={{float: 'right', display: 'inline'}}>
                         <Badge variant={mode === 1 ? "success" : "secondary"}>
                             {phone || 'НЕТ'}
@@ -72,7 +74,7 @@ const Wait = () => {
             </ListGroup.Item>
         </ListGroup>
     );
-}
+};
 
 const Error = props => (
     <ListGroup.Item>
@@ -83,8 +85,8 @@ const Error = props => (
 export default class Items extends Component {
 
     render() {
-        const {total, workers, loading, error, watch, onWatch} = this.props;
-        const watchUsers = watch.workers || [];
+        const {workers, loading, error, watch, onWatch} = this.props;
+        const watchUsers = (watch.workers || []).reduce((res, w) => ({...res, [w.id]: true}), {});
         if (loading)
             return <Wait/>;
         if (error)
@@ -92,7 +94,7 @@ export default class Items extends Component {
 
         const list = workers
             .filter(({login}) => login)
-            .map(item => <Item key={item.id} data={item} onWatch={onWatch} isWatch={!!watchUsers[item.id]}/>);
+            .map(item => <Item key={item.id} data={item} onWatch={onWatch} isWatch={watchUsers[item.id]}/>);
 
         return (
             <ListGroup>

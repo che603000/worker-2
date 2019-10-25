@@ -15,10 +15,11 @@ class Users extends Component {
     };
 
     render() {
-        const {loading = false, workers: [], total = 0, error = null, value = ""} = this.props.users;
+        const {users, search} = this.props;
+        const {loading = false, workers: [], total = 0, error = null} = users;
         return (
             <div className={'panel'}>
-                <Search value={value} onSearch={this.onSearch}/>
+                <Search value={search} onSearch={this.onSearch}/>
                 <Items {...this.props.users} watch={this.props.watch} onWatch={this.onWatch}/>
             </div>
         )
@@ -28,8 +29,9 @@ class Users extends Component {
 
 
 export default connect(state => {
-    const {users, watch} = state;
+    const {users, watch, search} = state;
     return {
+        search,
         users,
         watch
     };

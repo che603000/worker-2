@@ -23,13 +23,6 @@ export const watchUser = (data) => dispatch => {
 
     dispatch(action);
     sendMessage(action)
-        .then(data => dispatch({type: WATCH_SUCCESS, data}))
         .catch(error => dispatch({type: WATCH_ERROR, data: {error}}));
 };
 
-export const watchRefresh = () => dispatch => {
-    const action = {type: WATCH_REFRESH};
-    sendMessage(action)
-        .then(data => dispatch({type: WATCH_SUCCESS, data}))
-        .catch(error => dispatch({type: WATCH_ERROR, data: {error}}));
-};

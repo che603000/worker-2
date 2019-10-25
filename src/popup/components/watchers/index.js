@@ -11,11 +11,10 @@ class UsersWatch extends Component {
 
 
     render() {
-        const {loading = false, error = null} = this.props.watch;
-        const workers = Object.values(this.props.watch.workers);
+        const {loading = false, error = null, workers} = this.props.watch;
 
         return (
-            <div className={'panel'}>
+            <div className={'panel-items'}>
                 <Items loading={loading}
                        error={error}
                        workers={workers}

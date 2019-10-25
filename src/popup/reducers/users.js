@@ -5,15 +5,13 @@ const defState = {
     error: null,
     workers: [],
     total: 0,
-    value: ""
 };
 
 export default (state = defState, action) => {
     const {type, data} = action;
     switch (type) {
         case SEARCH_REQUEST: {
-            const {value} = data;
-            return {...state, value, loading: true, error: null};
+            return {...state, loading: true, error: null};
         }
         case SEARCH_SUCCESS: {
             const {workers, totalCount} = data;

@@ -3,3 +3,17 @@
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
+.panel-items {
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+div.list-group {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+div.list-group-item{
+    padding: .25rem 0.75rem;
+}

@@ -1,19 +1,10 @@
-import {SEARCH_REQUEST, URL_SEARCH,  WATCH_REQUEST, WATCH_REFRESH} from './const';
-import {Collection} from './models/collection';
-import {load} from './utils';
+import {SEARCH_REQUEST, URL_SEARCH, WATCH_REQUEST, WATCH_REFRESH} from './const';
+import {Collection, Birthday} from './models/collection';
+import {load, loadState} from './utils';
+import {STORE_WATCHERS, STORE_OPTIONS} from './const'
 
-
-//const {OPEN, TAB, CARD, REMOVE, SEARCH, WATCH, ERROR, app} = CONST;
-
-// let keyInterval;
-let state = {
-    value: "",
-    tab: "#workers"
-};
-//
-//
-// const {Watchers, Workers, Birthdays, Options, load} = app;
-
+let keyInterval;
+let options = loadState(STORE_OPTIONS, {status: "3", alerts: "1"});
 const collection = new Collection();
 
 const auth = () => {
@@ -22,139 +13,69 @@ const auth = () => {
     return load(userUrl)
         .catch(res => load(authUrl));
 };
-/*
 
-const appOptions = new Options();
-
-const watchers = new Watchers();
-const birthdays = new Birthdays();
-const workers = new Workers([], {watchers});
-
-const alert = (user, optionsAlert = {}) => {
-    const {eventTime = (1000 * 60), status = false} = optionsAlert;
-    const {id, name, family, secondName, departmentName, postName} = user;
-    const notification = appOptions.getItem('notification');
+const notification = (worker, options) => {
+    const {alert} = options;
+    const {id, name, family, secondName, departmentName, postName, mode} = worker;
     let optionsNotification;
-    switch (notification) {
-        case 1:
+    switch (alert) {
+        case "0":
             return; // не выводить оповещение
             break;
-        case 2:
+        case "1":
             optionsNotification = {eventTime: Date.now() + 1000 * 30}; //  выводить оповещение на 30 сек
             break;
-        case 3:
+        case "2":
             optionsNotification = {requireInteraction: true}; // выводить оповещение
             break;
         default:
             optionsNotification = {};
     }
     chrome.notifications.create(
-        user.id.toString(),
+        worker.id.toString(),
         {
             type: "basic",
             iconUrl: `https://portal/api/xrm/img/WorkerPhoto/${id}`,
-            title: `Изменение статуса: ${status ? "В офисе" : "Не в офисе"}`,
+            title: `Изменение статуса: ${mode === 1 ? "В офисе" : "Не в офисе"}`,
             message: `${family} ${name} ${secondName}`,
             contextMessage: `${departmentName} ${postName}`,
             ...optionsNotification
         });
 };
 
-const commands = (options) => {
-    const {type, data} = options;
-    switch (type) {
-        case OPEN: {
-            workers.refresh();
-            break;
-        }
-        case TAB: {
-            const {tab} = data;
-            state.tab = tab;
-            break;
-        }
-        case SEARCH: {
-            const {value} = data;
-            state.value = value;
-            workers.load(value);
-            break;
-        }
-        case REMOVE: {
-            const {id} = data;
-            watchers.remove(id).save();
-            break;
-        }
-        case WATCH: {
-            const {id} = data;
-            const item = workers.getById(id);
-            if (item) {
-                watchers.toggle(item).save();
-                workers.add(item);
-            }
-            break;
-        }
-        default: {
-
-        }
-    }
+const startInterval = options => {
+    const time = 1000 * 60 * (+options.status); //
+    keyInterval && clearInterval(keyInterval);
+    if (time > 0)
+        keyInterval = setInterval(() => collection.refresh(), time);
 };
 
-const statusRequest = () => {
-    watchers
-        .refresh()
-        .then(list => {
-            list.length > 0 && workers.refresh();
-            return list;
-        })
-        .then(list => {
-            list.forEach(w => alert(w, {status: w.mode === 1}))
-        });
-}
+collection.load();
+collection.onChangeStatus = worker => notification(worker, options);
+startInterval(options);
 
-chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
-    sendResponse(state);
-    commands(req);
-});
 
-keyInterval = setInterval(() => statusRequest(), 1000 * 60 * appOptions.getItem("status-request")); // 5 мин
+const birthday = new Birthday();
+birthday.load();
 
-appOptions.changeOptions = (change, props) => {
-    clearInterval(keyInterval);
-    keyInterval = setInterval(() => statusRequest(), 1000 * 60 * props["status-request"]); // 5 мин
-}
-*/
-
-const commands = (options, sendResponse) => {
-    const {type, data} = options;
+const commands = (action, sendResponse) => {
+    const {type, data} = action;
     switch (type) {
         case SEARCH_REQUEST: {
             load(`${URL_SEARCH}/${data.value}`)
-                .then(data => {
-                    sendResponse(data);
-                })
+                .then(data => sendResponse(data));
             return true;
         }
         case WATCH_REQUEST: {
             Promise.resolve()
                 .then(() => {
                     collection.set(data);
-                })
-                .then(() => {
-                    const obj = collection.toObject();
-                    sendResponse(obj);
+                    collection.save();
+                    const watchers = collection.toArray();
+                    sendResponse(watchers);
                 });
-
             return true;
         }
-        case WATCH_REFRESH: {
-            Promise.resolve()
-                .then(() => {
-                    const obj = collection.toObject();
-                    sendResponse(obj);
-                });
-
-            return true;
-        }
-
         default: {
             console.error("type not found");
             return undefined;
@@ -166,12 +87,27 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     return commands(req, sendResponse);
 });
 
+window.addEventListener('storage', (e) => {
+    const {key} = e;
+    switch (key) {
+        case STORE_OPTIONS: {
+            options = loadState(STORE_OPTIONS, {status: "3", alerts: "1"});
+            startInterval(options);
+            break;
+        }
+        default: {
+
+        }
+    }
+});
 
 auth()
     .then(() => {
         // watchers.load();
         // birthdays.load();
-        console.log('background start => ok')
+        collection.refresh();
+        birthday.refresh();
+        //console.log('background start => ok');
     })
     .catch(err => {
         console.log('background start => error')
