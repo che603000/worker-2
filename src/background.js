@@ -3,7 +3,7 @@ import {Collection, Birthday} from './models/collection';
 import {load, loadState, saveState} from './utils';
 import {STORE_OPTIONS, STORE_WORKERS} from './const';
 
-let keyInterval;
+let keyInterval, user;
 let options = loadState(STORE_OPTIONS, {status: "3", alerts: "1"});
 const watchers = new Collection();
 
@@ -65,12 +65,13 @@ const commands = (action, sendResponse) => {
             birthday.refresh();
             load(`${URL_WORKER_SEARCH}/${data.value}`)
                 .then(data => saveState(STORE_WORKERS, data.workers));
-            return sendResponse({});
+            sendResponse(user);
+            return true;
         }
         case WORKER_REQUEST: {
             load(`${URL_WORKER_SEARCH}/${data.value}`)
                 .then(data => {
-                    saveState(STORE_WORKERS, data.workers);
+                    saveState(STORE_WORKERS, data.workers.map(w => ({...w, time: Date.now()})));
                 });
             return sendResponse({});
         }
@@ -81,7 +82,6 @@ const commands = (action, sendResponse) => {
                     watchers.save();
                 });
             return sendResponse({});
-            ;
         }
         default: {
             console.error("type not found");
@@ -109,8 +109,9 @@ window.addEventListener('storage', (e) => {
 });
 
 auth()
-    .then(() => {
+    .then(data => {
         console.log('background start => ok');
+        user = data;
     })
     .catch(err => {
         console.log('background start => error');

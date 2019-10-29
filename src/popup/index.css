@@ -1,6 +1,8 @@
 html {
-    width: 450px;
-    height: auto;
+    width: 480px;
+    /*height: auto;*/
+    min-height: 300px;
+    max-height: 900px;
 
 
 }

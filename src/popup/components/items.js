@@ -1,10 +1,37 @@
 import React, {Component} from 'react';
-import {Row, Col, Badge, Spinner, ListGroup, Button} from "react-bootstrap";
+import {Row, Col, Badge, Spinner, ListGroup, Button, Dropdown} from "react-bootstrap";
 import {FaEye, FaEyeSlash} from 'react-icons/fa';
+import {callPhone} from '../actions/users'
+
+const onSelect = ({key, e, data, userId, nickname = {}}) => {
+    e.preventDefault();
+    debugger;
+    switch (key) {
+        case 'phone':
+            callPhone(userId, data.id)
+                .catch(e => console.log(e));
+            break;
+        case 'email':
+            window.open(`mailto:${data.login}@api.nnov.ru`);
+            break;
+        case 'facebook': {
+            const nick = nickname[key];
+            window.open(`https://www.facebook.com/messages/t/${nick}`);
+            break;
+        }
+        case 'telegram': {
+            const nick = nickname[key];
+            window.open(`tg://resolve?domain=${nick}`);
+            break;
+        }
+        default:
+            console.log(key, data);
+    }
+};
 
 const Item = props => {
-    const {data, isWatch, onWatch} = props;
-    const {id, family, name, secondName, phone, departmentName, postName, cabinet, mode} = data;
+    const {data, isWatch, onWatch, userId, nickname = {}} = props;
+    const {id, family, name, secondName, phone, departmentName, postName, cabinet, mode, login} = data;
 
     const styleImg = {
         width: '39px',
@@ -25,12 +52,14 @@ const Item = props => {
 
     const IconWatch = isWatch ? FaEyeSlash : FaEye;
 
+    const {id: _id, name: _name, ...links} = nickname;
+    const drops = Object.keys(links).map(key => <Dropdown.Item key={key} href={key}>{key}</Dropdown.Item>);
     return (
         <ListGroup.Item style={{border: 'none'}}>
             <Row>
                 <Col xs={2} style={{textAlign: 'center'}}>
                     <img className="img-rounded img-xs" src={`https://portal/api/xrm/img/WorkerPhoto/${id}`}
-                         style={styleImg} alt="нет фото"/>
+                         style={styleImg} alt="нет фото" title={id}/>
                     <Button variant="link" size="sm" onClick={() => onWatch(data)}>
                         <IconWatch title={isWatch ? "удалить из избранных" : "добавить в избранные"}
                                    size={18}
@@ -40,14 +69,22 @@ const Item = props => {
                 <Col xs={10}>
 
                     <span style={styleFullName}>{family} {name} {secondName}</span>
-                    {/*<a href="tg://resolve?domain=@izheleznov" target="_blank">Telegram</a>*/}
-                    <h5 style={{float: 'right', display: 'inline'}}>
-                        <Badge variant={mode === 1 ? "success" : "secondary"}>
+                    <Dropdown style={{float: 'right', display: 'inline'}}
+                              onSelect={(key, e, login) => onSelect({key, e, data, userId, nickname})}>
+                        <Dropdown.Toggle variant={mode === 1 ? "success" : "secondary"} id="dropdown-basic" size={"sm"}>
                             {phone || 'НЕТ'}
-                        </Badge>
-                    </h5>
+                        </Dropdown.Toggle>
 
-                    <div style={styleMemo}>{departmentName}. {postName}. {cabinet ? ("Офис: " + cabinet) : ""}</div>
+                        <Dropdown.Menu>
+                            <Dropdown.Item href="phone">Позвонить</Dropdown.Item>
+                            <Dropdown.Item href="email">Ел. почта</Dropdown.Item>
+                            {drops}
+                            {/*<Dropdown.Item href="facebook">Facebook</Dropdown.Item>*/}
+                            {/*<Dropdown.Item href="telegram">Telegram</Dropdown.Item>*/}
+                        </Dropdown.Menu>
+                    </Dropdown>
+
+                    <div style={styleMemo}>{departmentName}. {postName}. {cabinet ? ("Офис: " + cabinet) : ""} </div>
                 </Col>
             </Row>
         </ListGroup.Item>
@@ -83,7 +120,7 @@ const Error = props => (
 export default class Items extends Component {
 
     render() {
-        const {workers, loading, error, watch, onWatch} = this.props;
+        const {workers, loading, error, watch, onWatch, user, nicknames} = this.props;
         const watchUsers = (watch.workers || []).reduce((res, w) => ({...res, [w.id]: true}), {});
         if (loading)
             return <Wait/>;
@@ -92,7 +129,13 @@ export default class Items extends Component {
 
         const list = workers
             .filter(({login}) => login)
-            .map(item => <Item key={item.id} data={item} onWatch={onWatch} isWatch={watchUsers[item.id]}/>);
+            .map(item => <Item key={item.id}
+                               nickname={nicknames.find(n => n.id === item.id)}
+                               data={item}
+                               userId={user && user.id}
+                               onWatch={onWatch}
+                               isWatch={watchUsers[item.id]}
+            />);
 
         return (
             <ListGroup>

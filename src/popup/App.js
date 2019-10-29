@@ -11,10 +11,7 @@ import Watchers from './components/watchers';
 import BirthDay from './components/birthday';
 
 import {selectTab} from './actions/tabs';
-import {searchUsers} from './actions/users';
-
-import {sendMessage} from '../utils';
-import {POPUP_OPEN} from '../const';
+import {searchUsers, popupOpen} from './actions/users';
 
 class App extends React.Component {
     onTab = (key, e) => {
@@ -50,16 +47,15 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        //this.props.searchUsers(this.props.search, false);
-        sendMessage({type: POPUP_OPEN, data: {value: this.props.search}});
+        this.props.popupOpen(this.props.search);
     }
 
 }
 
 export default connect(state => {
-    const {tabs, users, search} = state;
+    const {tabs,  search} = state;
     return {
         tabs,
         search
     };
-}, {selectTab, searchUsers})(App);
+}, {selectTab, searchUsers, popupOpen})(App);

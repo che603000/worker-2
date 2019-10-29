@@ -17,8 +17,10 @@ class UsersWatch extends Component {
             <div className={'panel-items'}>
                 <Items loading={loading}
                        error={error}
+                       user={this.props.user}
                        workers={workers}
                        watch={this.props.watch}
+                       nicknames={this.props.nicknames}
                        onWatch={this.onWatch}/>
             </div>
         )
@@ -27,8 +29,10 @@ class UsersWatch extends Component {
 
 
 export default connect(state => {
-    const {watch} = state;
+    const {watch, user, options} = state;
     return {
-        watch
+        watch,
+        user,
+        nicknames: options.nicknames
     };
 }, {watchUser})(UsersWatch);

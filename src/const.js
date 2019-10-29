@@ -7,6 +7,7 @@ export const STORE_OPTIONS = "options";
 
 //APP commands
 export const POPUP_OPEN = 'popup-open';
+export const POPUP_USER = 'popup-user';
 export const POPUP_TAB_SELECT = 'tab-select';
 
 //SEARCH
@@ -22,6 +23,7 @@ export const WATCH_ERROR = "watch-error";
 
 //BIRTHDAY
 export const BIRTHDAY_SUCCESS = "birthday-success";
+export const OPTIONS_SUCCESS = "options-success";
 
 //URL
 export const URL_WORKER_SEARCH = "https://portal/api/xrm/json/WorkerByName";

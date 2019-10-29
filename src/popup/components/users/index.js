@@ -15,24 +15,30 @@ class Users extends Component {
     };
 
     render() {
-        const {users, search} = this.props;
+        const {users, search, nicknames} = this.props;
         const {loading = false, workers: [], total = 0, error = null} = users;
         return (
             <div className={'panel'}>
                 <Search value={search} onSearch={this.onSearch}/>
-                <Items {...this.props.users} watch={this.props.watch} onWatch={this.onWatch}/>
+                <Items {...this.props.users}
+                       watch={this.props.watch}
+                       onWatch={this.onWatch}
+                       user={this.props.user}
+                       nicknames={nicknames}
+                />
             </div>
         )
     }
 }
 
 
-
 export default connect(state => {
-    const {users, watch, search} = state;
+    const {users, watch, search, user, options} = state;
     return {
+        user,
         search,
         users,
-        watch
+        watch,
+        nicknames: options.nicknames
     };
 }, {searchUsers, watchUser})(Users);
