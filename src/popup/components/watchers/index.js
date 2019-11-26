@@ -11,16 +11,17 @@ class UsersWatch extends Component {
 
 
     render() {
-        const {loading = false, error = null, workers} = this.props.watch;
-
+        const {user, watch, nicknames, config} = this.props;
+        const {loading = false, error = null, workers} = watch;
         return (
             <div className={'panel-items'}>
                 <Items loading={loading}
                        error={error}
-                       user={this.props.user}
+                       user={user}
                        workers={workers}
-                       watch={this.props.watch}
-                       nicknames={this.props.nicknames}
+                       watch={watch}
+                       nicknames={nicknames}
+                       config={config}
                        onWatch={this.onWatch}/>
             </div>
         )
@@ -33,6 +34,7 @@ export default connect(state => {
     return {
         watch,
         user,
-        nicknames: options.nicknames
+        nicknames: options.nicknames,
+        config: options.config
     };
 }, {watchUser})(UsersWatch);

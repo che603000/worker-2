@@ -1,10 +1,6 @@
 html {
     width: 480px;
-    /*height: auto;*/
-    min-height: 300px;
-    max-height: 900px;
-
-
+    height: auto;
 }
 
 body {

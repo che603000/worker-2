@@ -1,7 +1,12 @@
 import React from 'react';
-import {Form, Button, Container, ButtonToolbar} from "react-bootstrap";
-import {STORE_OPTIONS} from '../const';
+import {Form, Button, Container, ButtonToolbar, Tabs, Tab, TabContainer, TabPane, Dropdown, Col} from "react-bootstrap";
+import {STORE_OPTIONS, VERSION} from '../const';
 import {saveState} from '../utils';
+
+
+import Status from './tabs/status';
+import NickNames from './tabs/nicknames';
+import Config from './tabs/config';
 
 class App extends React.Component {
 
@@ -9,10 +14,9 @@ class App extends React.Component {
         super(...arguments);
         this.state = {
             data: {},
-            error: null
+            error: {}
         }
     }
-
 
     onClose = e => {
         window.close();
@@ -23,9 +27,9 @@ class App extends React.Component {
         this.setState({...state, data: {...state.data, [name]: value}});
     };
 
-    validateNicknames(nicknames) {
+    validateJSON(json) {
         try {
-            JSON.parse(nicknames);
+            JSON.parse(json);
             return;
         } catch (e) {
             return e.message;
@@ -35,63 +39,73 @@ class App extends React.Component {
     onSubmit = e => {
         e.preventDefault();
         const {data} = this.state;
-        const error = this.validateNicknames(data.nicknames);
-        debugger;
-        if (error) {
+        const error = {
+            nicknames: this.validateJSON(data.nicknames),
+            config: this.validateJSON(data.config)
+        };
+        if (error.nicknames || error.config) {
             this.setState({error, data})
         } else {
-            saveState(STORE_OPTIONS, {...data, nicknames: JSON.parse(data.nicknames)});
+            saveState(STORE_OPTIONS, {
+                ...data,
+                nicknames: JSON.parse(data.nicknames),
+                config: JSON.parse(data.config),
+                ver: VERSION
+            });
             this.onClose();
         }
     };
 
+    onSelect = (key, e) => {
+        e.preventDefault();
+        console.log(key);
+    };
+
     render() {
-        const {data, error} = this.state;
-        const {status, alert, nicknames} = data;
+        const {data, error = {}} = this.state;
+        const {status, alert, nicknames, config} = data;
         return (
             <Container>
+                <p/>
+                <p style={{color: '#999'}}>
+                    <img src="../images/phone_32.png"/>
+                    <span className="h4"> Телефонный справочник АПИ - настройки <small>(версия 3.0)</small></span>
+
+                </p>
                 <Form onSubmit={this.onSubmit}>
-                    <Form.Group controlId="status">
-                        <Form.Label>Проверка статуса</Form.Label>
-                        <Form.Control as="select"
-                                      value={status}
-                                      onChange={e => this.onChange('status', e.target.value)}>
-                            <option value="0">не проверять</option>
-                            <option value="1">проверять каждую минуту</option>
-                            <option value="3">проверять каждые 3 минуты</option>
-                            <option value="5">проверять каждые 5 минуты</option>
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group controlId="alert">
-                        <Form.Label>Оповещение</Form.Label>
-                        <Form.Control as="select"
-                                      value={alert}
-                                      onChange={e => this.onChange('alert', e.target.value)}>
-                            <option value="0">не выводить</option>
-                            <option value="1">выводить на 30 сек</option>
-                            <option value="2">не закрывать автоматически</option>
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group controlId="nicknames">
-                        <Form.Label>Опции</Form.Label>
-                        <Form.Control as="textarea"
-                                      rows={10}
-                                      value={nicknames}
-                                      isInvalid={!!error}
-                                      onChange={e => this.onChange('nicknames', e.target.value)}>
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {error}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <ButtonToolbar>
-                        <Button variant="primary" type="submit">
+                    <Tabs defaultActiveKey="tabStatus">
+                        <Tab eventKey="tabStatus" title="Статус">
+                            <Status status={status} alert={alert} onChange={this.onChange}/>
+                        </Tab>
+                        <Tab eventKey="tabNicks" title="Пользователи">
+                            <NickNames nicknames={nicknames} error={error.nicknames} onChange={this.onChange}/>
+                        </Tab>
+                        <Tab eventKey="tabConfig" title="Конфигурация">
+                            <Config config={config} error={error.config} onChange={this.onChange}/>
+                        </Tab>
+                    </Tabs>
+
+
+                    <ButtonToolbar style={{float: 'right'}}>
+                        <Button variant="primary" type="submit" >
                             Сохранить
-                        </Button>
+                        </Button >
                         <span>&nbsp;</span>
                         <Button variant="secondary" type="cancel" onClick={this.onClose}>
                             Отменить
                         </Button>
+                        <span>&nbsp;</span>
+
+                        <Dropdown  onSelect={this.onSelect} >
+                            <Dropdown.Toggle variant="secondary" disabled>
+                                Загрузить
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                                <Dropdown.Item  href="nicknames">Пользователи</Dropdown.Item>
+                                <Dropdown.Item href="config">Конфигурация</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </ButtonToolbar>
                 </Form>
                 <br/>
@@ -100,8 +114,15 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        const {status, alert, nicknames} = this.props;
-        this.setState({data: {status, alert, nicknames: JSON.stringify(nicknames, null, 4)}});
+        const {status, alert, nicknames, config = ""} = this.props;
+        this.setState({
+            data: {
+                status,
+                alert,
+                nicknames: JSON.stringify(nicknames, null, 4),
+                config: JSON.stringify(config, null, 4)
+            }
+        });
     }
 
 }

@@ -1,3 +1,4 @@
+export const VERSION = 3;
 //STORE
 export const STORE_POPUP = 'state-popup';
 export const STORE_WORKERS = "workers";
@@ -29,4 +30,5 @@ export const OPTIONS_SUCCESS = "options-success";
 export const URL_WORKER_SEARCH = "https://portal/api/xrm/json/WorkerByName";
 export const URL_WORKER_IDS = "https://portal/api/xrm/json/WorkerByIds";
 export const URL_WORKER_BIRTHDAY = "https://portal/api/xrm/json-post/WorkerBirthdays";
+export const URL_WORKER_MOBILE = "https://portal/api/xrm/call/mobile";
 

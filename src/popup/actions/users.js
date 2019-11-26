@@ -7,7 +7,9 @@ import {
     WATCH_ERROR,
     WATCH_REFRESH,
     POPUP_OPEN,
-    POPUP_USER
+    POPUP_USER,
+
+    URL_WORKER_MOBILE
 } from '../../const';
 import {sendMessage} from '../../utils';
 
@@ -38,5 +40,9 @@ export const popupOpen = (value) => dispatch => {
 
 export const callPhone = (userId, id) => {
     return window.fetch(`https://portal/api/xrm/json/WorkerCall/${userId}_${id}`);
+};
+
+export const callMobilePhone = (id) => {
+    return window.fetch(`${URL_WORKER_MOBILE}/${id}`);
 };
 

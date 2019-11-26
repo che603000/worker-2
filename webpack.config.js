@@ -86,6 +86,7 @@ module.exports = {
             minify: false
         }),
         new CopyWebpackPlugin([
+             {from: 'src/config.js', to: './'},
              {from: 'src/images', to: './images'},
              {from: 'src/end.js', to: "./js"},
              {from: 'src/manifest.json', to: "./"},

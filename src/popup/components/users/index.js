@@ -15,7 +15,7 @@ class Users extends Component {
     };
 
     render() {
-        const {users, search, nicknames} = this.props;
+        const {users, search, nicknames, config} = this.props;
         const {loading = false, workers: [], total = 0, error = null} = users;
         return (
             <div className={'panel'}>
@@ -25,6 +25,7 @@ class Users extends Component {
                        onWatch={this.onWatch}
                        user={this.props.user}
                        nicknames={nicknames}
+                       config={config}
                 />
             </div>
         )
@@ -39,6 +40,7 @@ export default connect(state => {
         search,
         users,
         watch,
-        nicknames: options.nicknames
+        nicknames: options.nicknames,
+        config: options.config
     };
 }, {searchUsers, watchUser})(Users);

@@ -34,7 +34,8 @@ const defState = {
         options: {
             status: "3",
             alerts: "1",
-            nicknames: '[]'
+            nicknames: [],
+            config: {}
         }
     },
     ...loadState(STORE_POPUP)
@@ -74,7 +75,7 @@ window.addEventListener('storage', (e) => {
             break;
         }
         case STORE_OPTIONS: {
-            const options = loadState(STORE_OPTIONS, {status: "3", alerts: "1", nicknames: '[]'});
+            const options = loadState(STORE_OPTIONS, {status: "3", alerts: "1", nicknames: []});
 
             const action = {
                 type: OPTIONS_SUCCESS,

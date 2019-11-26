@@ -9,7 +9,7 @@ import App from './app';
 import {STORE_OPTIONS} from '../const';
 import {loadState, saveState} from '../utils';
 
-const props = loadState(STORE_OPTIONS, {status: "3", alert: "1"});
+const props = loadState(STORE_OPTIONS, {status: "3", alert: "1", nicknames: [], config: {}});
 
 ReactDOM.render(<App {...props}/>, document.getElementById('root'));
 
