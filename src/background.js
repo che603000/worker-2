@@ -3,8 +3,19 @@ import {Collection, Birthday} from './models/collection';
 import {load, loadState, saveState} from './utils';
 import {STORE_OPTIONS, STORE_WORKERS, VERSION} from './const';
 
+const DEF_OPTIONS = {
+    status: "3",
+    alert: "1",
+    config: CONFIG,
+    nicknames: NICKNAMES,
+    ver: VERSION
+};
+
 let keyInterval, user;
-let options = loadState(STORE_OPTIONS, {status: "3", alerts: "1", ver: VERSION});
+let options = loadState(STORE_OPTIONS, DEF_OPTIONS);
+if (options.ver !== VERSION)
+    saveState(STORE_OPTIONS, DEF_OPTIONS);
+
 const watchers = new Collection();
 
 const auth = () => {
@@ -98,7 +109,7 @@ window.addEventListener('storage', (e) => {
     const {key} = e;
     switch (key) {
         case STORE_OPTIONS: {
-            options = loadState(STORE_OPTIONS, {status: "3", alerts: "1", ver: VERSION});
+            options = loadState(STORE_OPTIONS, DEF_OPTIONS);
             startInterval(options);
             break;
         }
@@ -107,10 +118,6 @@ window.addEventListener('storage', (e) => {
         }
     }
 });
-
-const stateOptions = loadState(STORE_OPTIONS, null);
-if (!stateOptions || stateOptions.ver !== VERSION)
-    saveState(STORE_OPTIONS, {status: "3", alert: "1", config: CONFIG, nicknames: NICKNAMES, ver: VERSION});
 
 auth()
     .then(data => {

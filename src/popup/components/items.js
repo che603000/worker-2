@@ -52,11 +52,13 @@ const Item = props => {
     const IconWatch = isWatch ? FaEyeSlash : FaEye;
 
     const {id: _id, name: _name, ...links} = nickname;
-    const drops = Object.keys(links).map(key =>
-        <Dropdown.Item key={key} href={key}>
-            {config[key].title}
-        </Dropdown.Item>
-    );
+    const drops = Object.keys(links)
+        .filter(key => links[key])
+        .map(key =>
+            <Dropdown.Item key={key} href={key}>
+                {config[key].title}
+            </Dropdown.Item>
+        );
     return (
         <ListGroup.Item style={{border: 'none'}}>
             <Row>
@@ -79,10 +81,10 @@ const Item = props => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                            <Dropdown.Item href="phone">Внутр. тел.</Dropdown.Item>
+                            {phone ? <Dropdown.Item href="phone">Внутр. тел.</Dropdown.Item> : null}
                             {canMobileCall ? <Dropdown.Item href="mobile">Моб. тел.</Dropdown.Item> : null}
-                            <Dropdown.Item href="email">Ел. почта</Dropdown.Item>
-                            {drops.length > 0? <Dropdown.Divider/>: null}
+                            <Dropdown.Item href="email">Эл. почта</Dropdown.Item>
+                            {drops.length > 0 ? <Dropdown.Divider/> : null}
                             {drops}
                         </Dropdown.Menu>
                     </Dropdown>

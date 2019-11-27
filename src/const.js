@@ -1,4 +1,7 @@
-export const VERSION = 3;
+import {version} from './manifest.json'
+
+export const VERSION = version.split('.')[0];
+
 //STORE
 export const STORE_POPUP = 'state-popup';
 export const STORE_WORKERS = "workers";

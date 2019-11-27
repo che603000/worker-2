@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Phones",
-  "version": "3.0.2",
+  "version": "3.0.4",
   "icons": {
     "16": "images/phone_16.png",
     "32": "images/phone_32.png",
@@ -35,7 +35,7 @@
       "32": "images/phone_32.png",
       "64": "images/phone_64.png"
     },
-    "default_title": "Справочник тел. АПИ [ver 3.0]",
+    "default_title": "Справочник тел. АПИ",
     "default_popup": "popup.html"
   },
   "permissions": [

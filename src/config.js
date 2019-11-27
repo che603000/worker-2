@@ -15,18 +15,4 @@ const CONFIG = {
 
 const NICKNAMES = [];
 
-/*
-const NICKNAMES = [
-    {
-        "id": 592,
-        "name": "Гавричев",
-        "facebook": "anatoly.gavrichev",
-        "telegram": "Anatoly_Gavrichev"
-    },
-    {
-        "id": 872,
-        "name": "Перов",
-        "facebook": "sergey.perov.39"
-    }
-];
-*/
+

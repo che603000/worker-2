@@ -2,10 +2,12 @@ import React from 'react';
 import {Form, Button, Container, ButtonToolbar, Tabs, Tab, TabContainer, TabPane, Dropdown, Col} from "react-bootstrap";
 import {STORE_OPTIONS, VERSION} from '../const';
 import {saveState} from '../utils';
+import {version} from '../manifest.json';
 
 
 import Status from './tabs/status';
 import NickNames from './tabs/nicknames';
+import NickAdd from './tabs/nickname-add';
 import Config from './tabs/config';
 
 class App extends React.Component {
@@ -61,6 +63,10 @@ class App extends React.Component {
         console.log(key);
     };
 
+    onKeyAdd = e => {
+        console.log(e.altKey, e.code);
+    }
+
     render() {
         const {data, error = {}} = this.state;
         const {status, alert, nicknames, config} = data;
@@ -69,40 +75,45 @@ class App extends React.Component {
                 <p/>
                 <p style={{color: '#999'}}>
                     <img src="../images/phone_32.png"/>
-                    <span className="h4"> Телефонный справочник АПИ - настройки <small>(версия 3.0)</small></span>
+                    <span className="h4"> Телефонный справочник АПИ - настройки <small>(версия {version})</small></span>
 
                 </p>
                 <Form onSubmit={this.onSubmit}>
-                    <Tabs defaultActiveKey="tabStatus">
+                    <Tabs defaultActiveKey="tabNicks">
                         <Tab eventKey="tabStatus" title="Статус">
                             <Status status={status} alert={alert} onChange={this.onChange}/>
                         </Tab>
                         <Tab eventKey="tabNicks" title="Пользователи">
-                            <NickNames nicknames={nicknames} error={error.nicknames} onChange={this.onChange}/>
+                            <div onKeyDown={this.onKeyAdd}>
+                                <NickAdd config={config} onInsert={this.onChange} nicknames={nicknames}/>
+                                <NickNames nicknames={nicknames} error={error.nicknames} onChange={this.onChange}/>
+                            </div>
                         </Tab>
                         <Tab eventKey="tabConfig" title="Конфигурация">
                             <Config config={config} error={error.config} onChange={this.onChange}/>
                         </Tab>
                     </Tabs>
 
-
+                    <a href="https://chrome.google.com/webstore/detail/phones/cbjncbpbebbkalchfeocjlodigljmljf">
+                        <small>обновить версию</small>
+                    </a>
                     <ButtonToolbar style={{float: 'right'}}>
-                        <Button variant="primary" type="submit" >
+                        <Button variant="primary" type="submit">
                             Сохранить
-                        </Button >
+                        </Button>
                         <span>&nbsp;</span>
                         <Button variant="secondary" type="cancel" onClick={this.onClose}>
                             Отменить
                         </Button>
                         <span>&nbsp;</span>
 
-                        <Dropdown  onSelect={this.onSelect} >
+                        <Dropdown onSelect={this.onSelect}>
                             <Dropdown.Toggle variant="secondary" disabled>
                                 Загрузить
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                <Dropdown.Item  href="nicknames">Пользователи</Dropdown.Item>
+                                <Dropdown.Item href="nicknames">Пользователи</Dropdown.Item>
                                 <Dropdown.Item href="config">Конфигурация</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
