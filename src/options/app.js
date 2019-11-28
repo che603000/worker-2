@@ -16,7 +16,8 @@ class App extends React.Component {
         super(...arguments);
         this.state = {
             data: {},
-            error: {}
+            error: {},
+            search: false
         }
     }
 
@@ -64,8 +65,10 @@ class App extends React.Component {
     };
 
     onKeyAdd = e => {
-        console.log(e.altKey, e.code);
-    }
+        const {altKey, keyCode} = e;
+        if (altKey && keyCode === 83)
+            this.setState({...this.state, search: !this.state.search})
+    };
 
     render() {
         const {data, error = {}} = this.state;
@@ -79,13 +82,14 @@ class App extends React.Component {
 
                 </p>
                 <Form onSubmit={this.onSubmit}>
-                    <Tabs defaultActiveKey="tabNicks">
+                    <Tabs defaultActiveKey="tabStatus">
                         <Tab eventKey="tabStatus" title="Статус">
                             <Status status={status} alert={alert} onChange={this.onChange}/>
                         </Tab>
                         <Tab eventKey="tabNicks" title="Пользователи">
                             <div onKeyDown={this.onKeyAdd}>
-                                <NickAdd config={config} onInsert={this.onChange} nicknames={nicknames}/>
+                                <NickAdd config={config} onInsert={this.onChange} nicknames={nicknames}
+                                         visible={this.state.search}/>
                                 <NickNames nicknames={nicknames} error={error.nicknames} onChange={this.onChange}/>
                             </div>
                         </Tab>

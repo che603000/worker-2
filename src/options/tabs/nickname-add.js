@@ -8,7 +8,7 @@ let key = null;
 
 const NicknameAdd = props => {
 
-    const {nicknames, error, onInsert} = props;
+    const {nicknames, error, onInsert, visible} = props;
     const {config = "{}"} = props;
     const [value, setValue] = useState("");
     const [list, setList] = useState([]);
@@ -62,7 +62,7 @@ const NicknameAdd = props => {
 
     return (
         <div>
-            <Collapse in={true}>
+            <Collapse in={visible}>
                 <div className="tab-panel">
                     <Form.Group controlId="nickname">
                         <InputGroup className="mb-3">
@@ -71,7 +71,7 @@ const NicknameAdd = props => {
                             </InputGroup.Prepend>
                             <Form.Control
                                 list="list-names"
-                                placeholder="фамилия сотрудника"
+                                placeholder="поиск сотрудника по фамилии"
                                 value={value}
                                 isInvalid={!!error}
                                 isValid={userId}

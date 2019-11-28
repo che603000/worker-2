@@ -5,7 +5,7 @@ import {Form, Tab} from "react-bootstrap";
 const Nicknames = props => {
     const {nicknames, error, onChange} = props;
     return (
-        <div className="tab-panel">
+        <div className="tab-panel" title="Нажмите Alt-S для поиска сотрудника">
             <Form.Group controlId="nicknames">
                 <Form.Control as="textarea"
                               rows={16}
