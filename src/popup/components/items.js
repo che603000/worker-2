@@ -9,7 +9,7 @@ const onSelect = ({key, e, data, userId, nickname = {}, config}) => {
     debugger;
     switch (key) {
         case 'phone':
-            callPhone(userId, data.id)
+            callPhone(data.id)
                 .catch(e => console.log(e));
             break;
         case 'email':

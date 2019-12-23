@@ -38,8 +38,8 @@ export const popupOpen = (value) => dispatch => {
         .catch(error => user => dispatch({type: POPUP_USER, data: {user: null}}));
 };
 
-export const callPhone = (userId, id) => {
-    return window.fetch(`https://portal/api/xrm/json/WorkerCall/${userId}_${id}`);
+export const callPhone = (id) => {
+    return window.fetch(`https://portal/api/xrm/call/inner/${id}`);
 };
 
 export const callMobilePhone = (id) => {
