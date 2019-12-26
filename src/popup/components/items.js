@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Row, Col, Badge, Spinner, ListGroup, Button, Dropdown} from "react-bootstrap";
+import {Row, Col, Badge, Spinner, ListGroup, Button, Dropdown, ButtonGroup, DropdownButton} from "react-bootstrap";
 import {FaEye, FaEyeSlash} from 'react-icons/fa';
 import {callPhone, callMobilePhone} from '../actions/users';
 
@@ -74,20 +74,28 @@ const Item = props => {
                 <Col xs={10}>
 
                     <span style={styleFullName}>{family} {name} {secondName}</span>
-                    <Dropdown style={{float: 'right', display: 'inline'}}
-                              onSelect={(key, e, login) => onSelect({key, e, data, userId, nickname, config})}>
-                        <Dropdown.Toggle variant={mode === 1 ? "success" : "secondary"} id="dropdown-basic" size={"sm"}>
+                    <ButtonGroup style={{float: 'right', display: 'inline'}}>
+                        <Button
+                            variant={mode === 1 ? "success" : "secondary"}
+                            size="sm"
+                            onClick={e => onSelect({key: 'phone', e, data, userId, nickname, config})}
+                            disabled={!phone}
+                        >
                             {phone || 'НЕТ'}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
+                        </Button>
+                        <DropdownButton
+                            as={ButtonGroup}
+                            variant={mode === 1 ? "success" : "secondary"}
+                            size={"sm"}
+                            onSelect={(key, e, login) => onSelect({key, e, data, userId, nickname, config})}
+                        >
                             {phone ? <Dropdown.Item href="phone">Внутр. тел.</Dropdown.Item> : null}
                             {canMobileCall ? <Dropdown.Item href="mobile">Моб. тел.</Dropdown.Item> : null}
                             <Dropdown.Item href="email">Эл. почта</Dropdown.Item>
                             {drops.length > 0 ? <Dropdown.Divider/> : null}
                             {drops}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                        </DropdownButton>
+                    </ButtonGroup>
 
                     <div style={styleMemo}>{departmentName}. {postName}. {cabinet ? ("Офис: " + cabinet) : ""} </div>
                 </Col>
